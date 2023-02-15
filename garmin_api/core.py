@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
+from zoneinfo import ZoneInfo
 
 from authlib.integrations.flask_client import OAuth, FlaskOAuth1App
 from flask import url_for, request, make_response, redirect, Flask
@@ -49,8 +50,16 @@ class GarminApi:
         print(self.token_secret_dict)
         return resp
 
+    def route_logout(self):
+        token_token = request.cookies.get('oauth_token')
+        resp = make_response(redirect('/'))
+        if token_token is not None:
+            self.token_secret_dict[token_token] = None
+        resp.delete_cookie('oauth_token')
+        return resp
+
     """
-    api
+    func
     """
 
     def get_token(self):
@@ -59,11 +68,15 @@ class GarminApi:
 
         :return: {'oauth_token': token, 'oauth_token_secret': token_secret }
         """
-        token = request.cookies.get('oauth_token')
-        token_secret = self.token_secret_dict.get(token)
-        if token is None or token_secret is None:
+        token_token = request.cookies.get('oauth_token')
+        token_secret = self.token_secret_dict.get(token_token)
+        if token_token is None or token_secret is None:
             return None
-        return {'oauth_token': token, 'oauth_token_secret': token_secret }
+        return {'oauth_token': token_token, 'oauth_token_secret': token_secret}
+
+    """
+    api
+    """
 
     def call_api(self, endpoint: str, start_time=None, end_time=None):
         """
@@ -76,18 +89,27 @@ class GarminApi:
         """
         token = self.get_token()
         if token is None:
-            raise Exception('Not logged in')
+            return {'error': 'Not logged in.'}
 
         if start_time is None and end_time is None:
-            now = datetime.utcnow()
+            now = datetime.utcnow() + timedelta(hours=8)  # TODO: this is only for Taiwan Timezone (UTC+8). You may want to change this
+            print(now)
             start_time = int((now - timedelta(days=1)).timestamp())
             end_time = int(now.timestamp())
 
         url = f'{API_HOST}/{endpoint}?uploadStartTimeInSeconds={start_time}&uploadEndTimeInSeconds={end_time}'
         resp: Response = self.garmin.get(url, token=token)
-        print(url)
+        print('request url:', url, 'response code:', resp.status_code)
         print(resp.content)
-        return resp.json()
+        if resp.status_code == 200:
+            return resp.json()
+        elif resp.status_code == 401:
+            return {'error': 'Invalid login data. Please login again.'}
+        elif resp.status_code == 400:
+            return {'error': 'Bad Request: ' + resp.json()['errorMessage']}
+        else:
+            return {'error': 'Unknown Error'}
+
 
     def get_daily_summaries(self, start_time=None, end_time=None):
         return self.call_api(API_DAILY_SUMMARIES, start_time, end_time)

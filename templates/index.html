@@ -7,7 +7,8 @@
 <body>
     <h1>ciph-garmin-api-research</h1>
 
-    <h2>==> <a href="/login">Login</a> <==</h2>
+    <h2 id="do_login">==> <a href="/login">Login</a> <==</h2>
+    <h2 id="do_logout">You have logged in! <a href="/logout">Click here to Logout</a></h2>
 
     <h2>APIs</h2>
     <ol>
@@ -24,5 +25,11 @@
         <li><a href="/heart_rate_variability_summaries">heart_rate_variability_summaries</a></li>
         <li><a href="/blood_pressure_summaries">blood_pressure_summaries</a></li>
     </ol>
+
+    <script>
+        let loggedIn = document.cookie.search('oauth_token=') !== -1;
+        document.getElementById('do_login').hidden = loggedIn;
+        document.getElementById('do_logout').hidden = !loggedIn;
+    </script>
 </body>
 </html>

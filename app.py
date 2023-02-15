@@ -30,6 +30,9 @@ def login():
 def authorize():
     return garmin_api.route_authorize()
 
+@app.route('/logout')
+def logout():
+    return garmin_api.route_logout()
 
 #
 # callback
