@@ -90,7 +90,37 @@ class GarminApi:
         return resp.json()
 
     def get_daily_summaries(self, start_time=None, end_time=None):
-        """
-        7.1. 每日摘要（Daily Summaries）
-        """
         return self.call_api(API_DAILY_SUMMARIES, start_time, end_time)
+
+    def get_third_party_daily_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_THIRD_PARTY_DAILY_SUMMARIES, start_time, end_time)
+
+    def get_epoch_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_EPOCH_SUMMARIES, start_time, end_time)
+
+    def get_sleep_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_SLEEP_SUMMARIES, start_time, end_time)
+
+    def get_composition_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_COMPOSITION_SUMMARIES, start_time, end_time)
+
+    def get_stress_details_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_STRESS_DETAILS_SUMMARIES, start_time, end_time)
+
+    def get_user_metrics_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_USER_METRICS_SUMMARIES, start_time, end_time)
+
+    def get_pulse_ox_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_PULSE_OX_SUMMARIES, start_time, end_time)
+
+    def get_respiration_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_RESPIRATION_SUMMARIES, start_time, end_time)
+
+    def get_health_snapshot_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_HEALTH_SNAPSHOT_SUMMARIES, start_time, end_time)
+
+    def get_heart_rate_variability_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_HEART_RATE_VARIABILITY_SUMMARIES, start_time, end_time)
+
+    def get_blood_pressure_summaries(self, start_time=None, end_time=None):
+        return self.call_api(API_BLOOD_PRESSURE_SUMMARIES, start_time, end_time)

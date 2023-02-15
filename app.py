@@ -16,9 +16,7 @@ garmin_api = GarminApi(app)
 
 @app.route('/')
 def hello_world():
-    return \
-        '<a href="/login">Login</a> <br>' + \
-        '<a href="daily_summaries">Get daily_summaries</a>'
+    return render_template('index.html')
 
 #
 # oauth
@@ -49,6 +47,50 @@ def authorize():
 @app.get('/daily_summaries')
 def test1():
     return garmin_api.get_daily_summaries()
+
+@app.get('/third_party_daily_summaries')
+def test2():
+    return garmin_api.get_third_party_daily_summaries()
+
+@app.get('/epoch_summaries')
+def test3():
+    return garmin_api.get_epoch_summaries()
+
+@app.get('/sleep_summaries')
+def test4():
+    return garmin_api.get_sleep_summaries()
+
+@app.get('/composition_summaries')
+def test5():
+    return garmin_api.get_composition_summaries()
+
+@app.get('/stress_details_summaries')
+def test6():
+    return garmin_api.get_stress_details_summaries()
+
+@app.get('/user_metrics_summaries')
+def test7():
+    return garmin_api.get_user_metrics_summaries()
+
+@app.get('/pulse_ox_summaries')
+def test8():
+    return garmin_api.get_pulse_ox_summaries()
+
+@app.get('/respiration_summaries')
+def test9():
+    return garmin_api.get_respiration_summaries()
+
+@app.get('/health_snapshot_summaries')
+def test10():
+    return garmin_api.get_health_snapshot_summaries()
+
+@app.get('/heart_rate_variability_summaries')
+def test11():
+    return garmin_api.get_heart_rate_variability_summaries()
+
+@app.get('/blood_pressure_summaries')
+def test12():
+    return garmin_api.get_blood_pressure_summaries()
 
 
 if __name__ == '__main__':
