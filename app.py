@@ -1,25 +1,24 @@
 from flask import Flask, request, url_for, render_template, jsonify, redirect
-from authlib.integrations.flask_client import OAuth
+from requests import Response
 
 import settings
+from garmin_api.core import GarminApi
 
 app = Flask(__name__)
 app.secret_key = 'AHUIHSUHASU151465IYASBI'  # 隨便打
 app.config['SESSION_TYPE'] = 'filesystem'
-oauth = OAuth(app)
-garmin_oauth = oauth.register(
-    name='garmin',
-    client_id=settings.CONSUMER_KEY,
-    client_secret=settings.CONSUMER_SECRET,
-    request_token_url='https://connectapi.garmin.com/oauth-service/oauth/request_token',
-    authorize_url='https://connect.garmin.com/oauthConfirm',
-    access_token_url='https://connectapi.garmin.com/oauth-service/oauth/access_token',
-)
-garmin = oauth.create_client('garmin')
+
+garmin_api = GarminApi(app)
+
+#
+# ---
+#
 
 @app.route('/')
 def hello_world():
-    return '<a href="/login">login</b>'
+    return \
+        '<a href="/login">Login</a> <br>' + \
+        '<a href="daily_summaries">Get daily_summaries</a>'
 
 #
 # oauth
@@ -27,17 +26,11 @@ def hello_world():
 
 @app.route('/login')
 def login():
-    redirect_uri = url_for('authorize', _external=True)
-    return garmin.authorize_redirect(redirect_uri)
+    return garmin_api.route_login()
 
 @app.route('/authorize')
 def authorize():
-    token = garmin_oauth.authorize_access_token()
-    # you can save the token into database
-    print(token)
-    return redirect('/')
-    # profile = garmin('/user', token=token)
-    # return jsonify(profile)
+    return garmin_api.route_authorize()
 
 
 #
@@ -53,10 +46,9 @@ def authorize():
 #
 # API
 #
-@app.get('/test1')
+@app.get('/daily_summaries')
 def test1():
-    # TODO...
-    pass
+    return garmin_api.get_daily_summaries()
 
 
 if __name__ == '__main__':
