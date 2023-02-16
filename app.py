@@ -5,7 +5,7 @@ import settings
 from garmin_api.core import GarminApi
 
 app = Flask(__name__)
-app.secret_key = 'AHUIHSUHASU151465IYASBI'  # 隨便打
+app.secret_key = settings.FLASK_SECRET_KEY
 app.config['SESSION_TYPE'] = 'filesystem'
 
 garmin_api = GarminApi(app)
@@ -38,11 +38,15 @@ def logout():
 # callback
 #
 
-# @app.post('/callback')
-# def callback():
-#     # TODO...
-#     print(len(request.values))
-#     return 'ok'
+@app.post('/callback/<callback_name>')
+def callback(callback_name: str):
+    try:
+        print('callback at endpoint=', callback_name)
+        print(request.data, flush=True)
+        print(request.json, flush=True)
+    except Exception as e:
+        print('callback error!', e)
+    return 'ok'
 
 #
 # API

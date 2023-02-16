@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta, tzinfo
 from zoneinfo import ZoneInfo
 
@@ -8,6 +9,7 @@ from requests import Response
 import settings
 from garmin_api.const import *
 
+_logger = logging.getLogger(__name__)
 
 class GarminApi:
     oauth: OAuth
@@ -42,12 +44,11 @@ class GarminApi:
 
     def route_authorize(self):
         token = self.oauth_client.authorize_access_token()  # {'oauth_token': 'xxx', 'oauth_token_secret': 'xxx'}
-        print(token)
         # you can save the token into database
         resp = make_response(redirect('/'))
         resp.set_cookie('oauth_token', token['oauth_token'])
         self.token_secret_dict[token['oauth_token']] = token['oauth_token_secret']
-        print(self.token_secret_dict)
+        _logger.debug(self.token_secret_dict)
         return resp
 
     def route_logout(self):
@@ -93,21 +94,21 @@ class GarminApi:
 
         if start_time is None and end_time is None:
             now = datetime.utcnow() + timedelta(hours=8)  # TODO: this is only for Taiwan Timezone (UTC+8). You may want to change this
-            print(now)
             start_time = int((now - timedelta(days=1)).timestamp())
             end_time = int(now.timestamp())
 
         url = f'{API_HOST}/{endpoint}?uploadStartTimeInSeconds={start_time}&uploadEndTimeInSeconds={end_time}'
         resp: Response = self.garmin.get(url, token=token)
-        print('request url:', url, 'response code:', resp.status_code)
-        print(resp.content)
+        _logger.debug('request url:', url, 'response code:', resp.status_code)
         if resp.status_code == 200:
             return resp.json()
         elif resp.status_code == 401:
             return {'error': 'Invalid login data. Please login again.'}
         elif resp.status_code == 400:
+            _logger.warn(resp.content)
             return {'error': 'Bad Request: ' + resp.json()['errorMessage']}
         else:
+            _logger.error(resp.content)
             return {'error': 'Unknown Error'}
 
 
