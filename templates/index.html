@@ -10,26 +10,70 @@
     <h2 id="do_login">==> <a href="/login">Login</a> <==</h2>
     <h2 id="do_logout">You have logged in! <a href="/logout">Click here to Logout</a></h2>
 
+    <h2>Query Time Range</h2>
+    <div style="background-color: azure">
+        From: <input type="datetime-local" id="start" name="start" value="2001-01-01T01:01"/>
+        to <input type="datetime-local" id="end" name="end" value="2001-01-01T01:02"/>
+{#        <br />#}
+        (= <code id="start_ts">00000</code> ~ <code id="end_ts">00000</code>)
+        <br /><br />
+        Quick Set:
+        <button onclick="ItsTime(15*60)" >Last 15 Minutes</button>
+        <button onclick="ItsTime(60*60)" >Last 60 Minutes</button>
+        <button onclick="ItsTime(3*60*60)" >Last 3 Hours</button>
+        <button onclick="ItsTime(12*60*60)" >Last 12 Hours</button>
+        <button onclick="ItsTime(24*60*60)" >Last 24 Hours</button>
+    </div>
+
     <h2>Health APIs</h2>
-    <ol>
-        <li><a href="/daily_summaries">daily_summaries</a></li>
-        <li><a href="/third_party_daily_summaries">third_party_daily_summaries</a></li>
-        <li><a href="/epoch_summaries">epoch_summaries</a></li>
-        <li><a href="/sleep_summaries">sleep_summaries</a></li>
-        <li><a href="/composition_summaries">composition_summaries</a></li>
-        <li><a href="/stress_details_summaries">stress_details_summaries</a></li>
-        <li><a href="/user_metrics_summaries">user_metrics_summaries</a></li>
-        <li><a href="/pulse_ox_summaries">pulse_ox_summaries</a></li>
-        <li><a href="/respiration_summaries">respiration_summaries</a></li>
-        <li><a href="/health_snapshot_summaries">health_snapshot_summaries</a></li>
-        <li><a href="/heart_rate_variability_summaries">heart_rate_variability_summaries</a></li>
-        <li><a href="/blood_pressure_summaries">blood_pressure_summaries</a></li>
+    <ol id="links">
+        <li><a raw_href="/api/health/daily_summaries">daily_summaries</a></li>
+        <li><a raw_href="/api/health/third_party_daily_summaries">third_party_daily_summaries</a></li>
+        <li><a raw_href="/api/health/epoch_summaries">epoch_summaries</a></li>
+        <li><a raw_href="/api/health/sleep_summaries">sleep_summaries</a></li>
+        <li><a raw_href="/api/health/composition_summaries">composition_summaries</a></li>
+        <li><a raw_href="/api/health/stress_details_summaries">stress_details_summaries</a></li>
+        <li><a raw_href="/api/health/user_metrics_summaries">user_metrics_summaries</a></li>
+        <li><a raw_href="/api/health/pulse_ox_summaries">pulse_ox_summaries</a></li>
+        <li><a raw_href="/api/health/respiration_summaries">respiration_summaries</a></li>
+        <li><a raw_href="/api/health/health_snapshot_summaries">health_snapshot_summaries</a></li>
+        <li><a raw_href="/api/health/heart_rate_variability_summaries">heart_rate_variability_summaries</a></li>
+        <li><a raw_href="/api/health/blood_pressure_summaries">blood_pressure_summaries</a></li>
     </ol>
 
     <script>
+        // login/out button
         let loggedIn = document.cookie.search('oauth_token=') !== -1;
         document.getElementById('do_login').hidden = loggedIn;
         document.getElementById('do_logout').hidden = !loggedIn;
+    </script>
+
+    <script>
+        // time selector
+        const pad0 = (n) => n < 10 ? "0"+n : n
+        const DateToInputString = (date) =>
+             `${pad0(date.getFullYear())}-${pad0(date.getMonth())}-${pad0(date.getDate())}T${pad0(date.getHours())}:${pad0(date.getMinutes())}`
+
+        function ItsTime(secondsFromEnd)
+        {
+            let start = new Date();
+            let end = new Date();
+            start.setSeconds(start.getSeconds() -secondsFromEnd);
+            document.getElementById("start").value = DateToInputString(start);
+            document.getElementById("end").value = DateToInputString(end);
+            let start_ts = Math.round(start.getTime()/1_000.0);
+            let end_ts = Math.round(end.getTime()/1_000.0);
+            document.getElementById("start_ts").innerText = start_ts;
+            document.getElementById("end_ts").innerText = end_ts;
+
+            let links = document.getElementById("links").getElementsByTagName('a')
+            for(let i = 0; i < links.length; i++)
+            {
+                links[i].href = links[i].getAttribute('raw_href') + `?start=${start_ts}&end=${end_ts}`
+            }
+        }
+        // Default: 1day
+        ItsTime(24*60*60);
     </script>
 </body>
 </html>

@@ -14,3 +14,17 @@ API_RESPIRATION_SUMMARIES = 'wellness-api/rest/respiration'  # 7.9. 呼吸摘要
 API_HEALTH_SNAPSHOT_SUMMARIES = 'wellness-api/rest/healthSnapshot'  # 7.10. 健康快照摘要（Health Snapshot Summaries）
 API_HEART_RATE_VARIABILITY_SUMMARIES = 'wellness-api/rest/hrv'  # 7.11. 心率变异性摘要（Heart Rate Variability (HRV) Summaries）
 API_BLOOD_PRESSURE_SUMMARIES = 'wellness-api/rest/bloodPressures'  # 7.12. 血压摘要 (Blood Pressure Summaries)
+API_HEALTH_ENDPOINTS = {
+    'daily_summaries': API_DAILY_SUMMARIES,
+    'third_party_daily_summaries': API_THIRD_PARTY_DAILY_SUMMARIES,
+    'epoch_summaries': API_EPOCH_SUMMARIES,
+    'sleep_summaries': API_SLEEP_SUMMARIES,
+    'composition_summaries': API_COMPOSITION_SUMMARIES,
+    'stress_details_summaries': API_STRESS_DETAILS_SUMMARIES,
+    'user_metrics_summaries': API_USER_METRICS_SUMMARIES,
+    'pulse_ox_summaries': API_PULSE_OX_SUMMARIES,
+    'respiration_summaries': API_RESPIRATION_SUMMARIES,
+    'health_snapshot_summaries': API_HEALTH_SNAPSHOT_SUMMARIES,
+    'heart_rate_variability_summaries': API_HEART_RATE_VARIABILITY_SUMMARIES,
+    'blood_pressure_summaries': API_BLOOD_PRESSURE_SUMMARIES,
+}

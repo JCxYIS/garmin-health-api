@@ -11,6 +11,7 @@ from garmin_api.const import *
 
 _logger = logging.getLogger(__name__)
 
+
 class GarminApi:
     oauth: OAuth
     oauth_client = None
@@ -79,7 +80,7 @@ class GarminApi:
     api
     """
 
-    def call_api(self, endpoint: str, start_time=None, end_time=None):
+    def call_api(self, endpoint: str, start_time: int = None, end_time: int = None):
         """
         Call garmin api.
 
@@ -92,58 +93,37 @@ class GarminApi:
         if token is None:
             return {'error': 'Not logged in.'}
 
-        if start_time is None and end_time is None:
-            now = datetime.utcnow() + timedelta(hours=8)  # TODO: this is only for Taiwan Timezone (UTC+8). You may want to change this
+        now = datetime.utcnow() + timedelta(hours=8)  # TODO: Taiwan Timezone (UTC+8). You may want to change this.
+        if start_time is None:
             start_time = int((now - timedelta(days=1)).timestamp())
+        if end_time is None:
             end_time = int(now.timestamp())
 
         url = f'{API_HOST}/{endpoint}?uploadStartTimeInSeconds={start_time}&uploadEndTimeInSeconds={end_time}'
         resp: Response = self.garmin.get(url, token=token)
-        _logger.debug('request url:', url, 'response code:', resp.status_code)
+        _logger.debug('Request url: %s | response code: %s | Timestamp: %s ~ %s',
+                      url, resp.status_code, datetime.fromtimestamp(start_time), datetime.fromtimestamp(end_time))
         if resp.status_code == 200:
             return resp.json()
         elif resp.status_code == 401:
             return {'error': 'Invalid login data. Please login again.'}
         elif resp.status_code == 400:
-            _logger.warn(resp.content)
+            _logger.warning(resp.content)
             return {'error': 'Bad Request: ' + resp.json()['errorMessage']}
         else:
             _logger.error(resp.content)
             return {'error': 'Unknown Error'}
 
+    def get_data(self, data_name: str, start_time=None, end_time=None):
+        """
+        call api by data_name
 
-    def get_daily_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_DAILY_SUMMARIES, start_time, end_time)
-
-    def get_third_party_daily_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_THIRD_PARTY_DAILY_SUMMARIES, start_time, end_time)
-
-    def get_epoch_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_EPOCH_SUMMARIES, start_time, end_time)
-
-    def get_sleep_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_SLEEP_SUMMARIES, start_time, end_time)
-
-    def get_composition_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_COMPOSITION_SUMMARIES, start_time, end_time)
-
-    def get_stress_details_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_STRESS_DETAILS_SUMMARIES, start_time, end_time)
-
-    def get_user_metrics_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_USER_METRICS_SUMMARIES, start_time, end_time)
-
-    def get_pulse_ox_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_PULSE_OX_SUMMARIES, start_time, end_time)
-
-    def get_respiration_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_RESPIRATION_SUMMARIES, start_time, end_time)
-
-    def get_health_snapshot_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_HEALTH_SNAPSHOT_SUMMARIES, start_time, end_time)
-
-    def get_heart_rate_variability_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_HEART_RATE_VARIABILITY_SUMMARIES, start_time, end_time)
-
-    def get_blood_pressure_summaries(self, start_time=None, end_time=None):
-        return self.call_api(API_BLOOD_PRESSURE_SUMMARIES, start_time, end_time)
+        :param data_name:
+        :param start_time: start timestamp. Default to last 24hrs
+        :param end_time: end time stamp. Default to now
+        :return:
+        """
+        endpoint = API_HEALTH_ENDPOINTS.get(data_name)
+        if endpoint is None:
+            raise ModuleNotFoundError()
+        return self.call_api(endpoint, start_time, end_time)
