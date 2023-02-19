@@ -58,8 +58,8 @@ def callback(callback_name: str):
         # print(request.json, flush=True)
         callback_history.append({
             "callback_name": callback_name, 
-            "callback_time": datetime.datetime.now,
-            "data":request.data,
+            "callback_time": int(datetime.datetime.timestamp(datetime.datetime.now())),
+            "data": request.data.decode("utf-8") if request.data is not None else '',
         })
     except Exception as e:
         print('callback error!', e)
@@ -67,7 +67,7 @@ def callback(callback_name: str):
 
 @app.get('/cbhistory/ciph')
 def cbhistory_ciph():
-    return callback_history
+    return jsonify(callback_history)
 
 #
 # API
