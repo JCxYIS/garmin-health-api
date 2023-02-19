@@ -33,7 +33,7 @@ class GarminApi:
         self.garmin = self.oauth.create_client('garmin')
 
         # pre-fill oauth dict for test (=> no need to login every time)
-        self.token_secret_dict = settings.TOKEN_SECRET_DICT
+        # self.token_secret_dict = settings.TOKEN_SECRET_DICT
 
     """
     Routes

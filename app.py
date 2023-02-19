@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from flask import Flask, request, url_for, render_template, jsonify, redirect, abort
@@ -48,16 +49,25 @@ def logout():
 # callback
 #
 
+callback_history = []
+
 @app.post('/callback/<callback_name>')
 def callback(callback_name: str):
     try:
-        print('callback at endpoint=', callback_name)
-        print(request.data, flush=True)
-        print(request.json, flush=True)
+        print('callback at endpoint=', callback_name, flush=True)
+        # print(request.json, flush=True)
+        callback_history.append({
+            "callback_name": callback_name, 
+            "callback_time": datetime.datetime.now,
+            "data":request.data,
+        })
     except Exception as e:
         print('callback error!', e)
     return 'ok'
 
+@app.get('/cbhistory/ciph')
+def cbhistory_ciph():
+    return callback_history
 
 #
 # API
