@@ -9,3 +9,6 @@ CONSUMER_SECRET = os.environ['CONSUMER_SECRET']
 
 # Flask Secret key
 FLASK_SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', 'default_secret_key')
+
+#
+MONGO_CONNECTION_STRING = os.environ['MONGO_CONNECTION_STRING']

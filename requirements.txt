@@ -4,3 +4,4 @@ requests-oauthlib==1.0.0
 Authlib~=1.2.0
 gunicorn==20.1.0
 python-dotenv==0.21.1
+pymongo~=4.3.3
