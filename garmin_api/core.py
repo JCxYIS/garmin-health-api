@@ -45,10 +45,11 @@ class GarminApi:
 
     def route_authorize(self):
         token = self.oauth_client.authorize_access_token()  # {'oauth_token': 'xxx', 'oauth_token_secret': 'xxx'}
-        # you can save the token into database
+        self.token_secret_dict[token['oauth_token']] = token['oauth_token_secret']
+        user_id = self.call_api(API_GET_USERID, None, None, token)  # {'userId': 'xxx'}
         resp = make_response(redirect('/'))
         resp.set_cookie('oauth_token', token['oauth_token'])
-        self.token_secret_dict[token['oauth_token']] = token['oauth_token_secret']
+        resp.set_cookie('user_id', user_id['userId'])
         _logger.debug(self.token_secret_dict)
         return resp
 
@@ -58,6 +59,7 @@ class GarminApi:
         if token_token is not None:
             self.token_secret_dict[token_token] = None
         resp.delete_cookie('oauth_token')
+        resp.delete_cookie('user_id')
         return resp
 
     """
@@ -80,18 +82,20 @@ class GarminApi:
     api
     """
 
-    def call_api(self, endpoint: str, start_time: int = None, end_time: int = None):
+    def call_api(self, endpoint: str, start_time: int = None, end_time: int = None, token=None):
         """
         Call garmin api.
 
         :param endpoint: api endpoint (e.g. activities)
         :param start_time: start timestamp. Default to last 24hrs
         :param end_time: end time stamp. Default to now
+        :param token: token in {'oauth_token': token_token, 'oauth_token_secret': token_secret} form.
         :return:
         """
-        token = self.get_token()
         if token is None:
-            return {'error': 'Not logged in.'}
+            token = self.get_token()
+            if token is None:
+                return {'error': 'Not logged in.'}
 
         now = datetime.utcnow() + timedelta(hours=8)  # TODO: Taiwan Timezone (UTC+8). You may want to change this.
         if start_time is None:

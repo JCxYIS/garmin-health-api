@@ -7,45 +7,64 @@
 <body>
     <h1>ciph-garmin-api-research</h1>
 
-    <h2 id="do_login">==> <a href="/login">Login</a> <==</h2>
-    <h2 id="do_logout">You have logged in! <a href="/logout">Click here to Logout</a></h2>
+    <section id="do_login" style="background: #ff111166">
+        <h2>Please login first.</h2>
+        <h2>==> <a href="/login">Login</a> <==</h2>
+    </section>
+    <section id="do_logout" style="background: #39c5bb66">
+        <h2>You have logged in!</h2>
+        <h4>User ID: <code id="user_id"></code></h4>
+        <h4><a href="/logout">Click here to Logout</a></h4>
+    </section>
 
-    <h2>Query Time Range</h2>
-    <div style="background-color: azure">
-        From: <input type="datetime-local" id="start" name="start" value="2001-01-01T01:01"/>
-        to <input type="datetime-local" id="end" name="end" value="2001-01-01T01:02"/>
-{#        <br />#}
-        (= <code id="start_ts">00000</code> ~ <code id="end_ts">00000</code>)
-        <br /><br />
-        Quick Set:
-        <button onclick="ItsTime(15*60)" >Last 15 Minutes</button>
-        <button onclick="ItsTime(60*60)" >Last 60 Minutes</button>
-        <button onclick="ItsTime(3*60*60)" >Last 3 Hours</button>
-        <button onclick="ItsTime(12*60*60)" >Last 12 Hours</button>
-        <button onclick="ItsTime(24*60*60)" >Last 24 Hours</button>
-    </div>
+    <section style="background-color: #39c5bb66">
+        <h2>Query Time Range</h2>
+        <div>
+            From: <input type="datetime-local" id="start" name="start" value="2001-01-01T01:01"/>
+            to <input type="datetime-local" id="end" name="end" value="2001-01-01T01:02"/>
+    {#        <br />#}
+            (= <code id="start_ts">00000</code> ~ <code id="end_ts">00000</code>)
+            <br /><br />
+            Quick Set:
+            <button onclick="ItsTime(15*60)" >Last 15 Minutes</button>
+            <button onclick="ItsTime(60*60)" >Last 60 Minutes</button>
+            <button onclick="ItsTime(3*60*60)" >Last 3 Hours</button>
+            <button onclick="ItsTime(12*60*60)" >Last 12 Hours</button>
+            <button onclick="ItsTime(24*60*60)" >Last 24 Hours</button>
+        </div>
+    </section>
 
-    <h2>Health APIs</h2>
-    <ol id="links">
-        <li><a raw_href="/api/health/daily_summaries">daily_summaries</a></li>
-        <li><a raw_href="/api/health/third_party_daily_summaries">third_party_daily_summaries</a></li>
-        <li><a raw_href="/api/health/epoch_summaries">epoch_summaries</a></li>
-        <li><a raw_href="/api/health/sleep_summaries">sleep_summaries</a></li>
-        <li><a raw_href="/api/health/composition_summaries">composition_summaries</a></li>
-        <li><a raw_href="/api/health/stress_details_summaries">stress_details_summaries</a></li>
-        <li><a raw_href="/api/health/user_metrics_summaries">user_metrics_summaries</a></li>
-        <li><a raw_href="/api/health/pulse_ox_summaries">pulse_ox_summaries</a></li>
-        <li><a raw_href="/api/health/respiration_summaries">respiration_summaries</a></li>
-        <li><a raw_href="/api/health/health_snapshot_summaries">health_snapshot_summaries</a></li>
-        <li><a raw_href="/api/health/heart_rate_variability_summaries">heart_rate_variability_summaries</a></li>
-        <li><a raw_href="/api/health/blood_pressure_summaries">blood_pressure_summaries</a></li>
-    </ol>
+    <section>
+        <h2>Health APIs</h2>
+        <ol id="links">
+            <li><a raw_href="/api/health/daily_summaries">daily_summaries</a></li>
+            <li><a raw_href="/api/health/third_party_daily_summaries">third_party_daily_summaries</a></li>
+            <li><a raw_href="/api/health/epoch_summaries">epoch_summaries</a></li>
+            <li><a raw_href="/api/health/sleep_summaries">sleep_summaries</a></li>
+            <li><a raw_href="/api/health/composition_summaries">composition_summaries</a></li>
+            <li><a raw_href="/api/health/stress_details_summaries">stress_details_summaries</a></li>
+            <li><a raw_href="/api/health/user_metrics_summaries">user_metrics_summaries</a></li>
+            <li><a raw_href="/api/health/pulse_ox_summaries">pulse_ox_summaries</a></li>
+            <li><a raw_href="/api/health/respiration_summaries">respiration_summaries</a></li>
+            <li><a raw_href="/api/health/health_snapshot_summaries">health_snapshot_summaries</a></li>
+            <li><a raw_href="/api/health/heart_rate_variability_summaries">heart_rate_variability_summaries</a></li>
+            <li><a raw_href="/api/health/blood_pressure_summaries">blood_pressure_summaries</a></li>
+        </ol>
+    </section>
 
     <script>
+        function getCookie(name) {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
         // login/out button
-        let loggedIn = document.cookie.search('oauth_token=') !== -1;
+        let loggedIn = getCookie('oauth_token') !== undefined;
         document.getElementById('do_login').hidden = loggedIn;
         document.getElementById('do_logout').hidden = !loggedIn;
+
+        document.getElementById('user_id').innerText = getCookie('user_id')
     </script>
 
     <script>

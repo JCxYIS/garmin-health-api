@@ -1,6 +1,8 @@
 # API
 API_HOST = 'https://apis.garmin.com'
 
+API_GET_USERID = 'wellness-api/rest/user/id'
+
 # HEALTH API (Restful)
 API_DAILY_SUMMARIES = 'wellness-api/rest/dailies'  # 7.1. 每日摘要（Daily Summaries）
 API_THIRD_PARTY_DAILY_SUMMARIES = 'wellness-api/rest/thirdPartyDailies'  # 7.2. 第三方每日摘要（Third-Party Daily Summaries）
