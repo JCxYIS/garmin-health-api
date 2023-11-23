@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ciph-garmin-api-research</title>
+    <title>Garmin Health Api Flask</title>
 </head>
 <body>
-    <h1>ciph-garmin-api-research</h1>
+    <h1>Garmin Health Api</h1>
 
     <section id="do_login" style="background: #ff111166">
         <h2>Please login first.</h2>
@@ -24,13 +24,14 @@
             to <input type="datetime-local" id="end" name="end" value="2001-01-01T01:02"/>
     {#        <br />#}
             (= <code id="start_ts">00000</code> ~ <code id="end_ts">00000</code>)
+            <input type="button" onclick="UserSetTime()" value="Set Time!" />
             <br /><br />
-            Quick Set:
-            <button onclick="ItsTime(15*60)" >Last 15 Minutes</button>
-            <button onclick="ItsTime(60*60)" >Last 60 Minutes</button>
-            <button onclick="ItsTime(3*60*60)" >Last 3 Hours</button>
-            <button onclick="ItsTime(12*60*60)" >Last 12 Hours</button>
-            <button onclick="ItsTime(24*60*60)" >Last 24 Hours</button>
+            Quick Set Start time:
+            <button onclick="SetStartTimeUntilNow(15*60)" >15 Minutes</button>
+            <button onclick="SetStartTimeUntilNow(60*60)" >60 Minutes</button>
+            <button onclick="SetStartTimeUntilNow(3*60*60)" >3 hours</button>
+            <button onclick="SetStartTimeUntilNow(12*60*60)" >12 Hours</button>
+            <button onclick="SetStartTimeUntilNow(24*60*60)" >24 Hours</button>
         </div>
     </section>
 
@@ -71,28 +72,43 @@
         // time selector
         const pad0 = (n) => n < 10 ? "0"+n : n
         const DateToInputString = (date) =>
-             `${pad0(date.getFullYear())}-${pad0(date.getMonth())}-${pad0(date.getDate())}T${pad0(date.getHours())}:${pad0(date.getMinutes())}`
+             `${pad0(date.getFullYear())}-${pad0(date.getMonth()+1)}-${pad0(date.getDate())}T${pad0(date.getHours())}:${pad0(date.getMinutes())}`
 
-        function ItsTime(secondsFromEnd)
+        function SetStartTimeUntilNow(secondsFromEnd)
         {
-            let start = new Date();
-            let end = new Date();
-            start.setSeconds(start.getSeconds() -secondsFromEnd);
+            let end = new Date(document.getElementById("end").value);
+            let start = new Date(end.getTime() - secondsFromEnd*1000);
+            SetTime(start, end);
+        }
+        function UserSetTime()
+        {
+            SetTime(document.getElementById("start").value, document.getElementById("end").value);
+        }
+        function SetTime(startDate, endDate)
+        {
+            // update input box
+            let start = new Date(startDate);
+            let end = new Date(endDate);
             document.getElementById("start").value = DateToInputString(start);
             document.getElementById("end").value = DateToInputString(end);
+            
+            // update unix
             let start_ts = Math.round(start.getTime()/1_000.0);
             let end_ts = Math.round(end.getTime()/1_000.0);
             document.getElementById("start_ts").innerText = start_ts;
             document.getElementById("end_ts").innerText = end_ts;
-
+            
+            // update links
             let links = document.getElementById("links").getElementsByTagName('a')
             for(let i = 0; i < links.length; i++)
             {
                 links[i].href = links[i].getAttribute('raw_href') + `?start=${start_ts}&end=${end_ts}`
             }
         }
-        // Default: 1day
-        ItsTime(24*60*60);
+
+        // Initial Default: 1day
+        document.getElementById("end").value = DateToInputString(new Date());
+        SetStartTimeUntilNow(24*60*60);
     </script>
 </body>
 </html>

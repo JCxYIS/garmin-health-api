@@ -16,6 +16,8 @@ app.config['SESSION_TYPE'] = 'filesystem'
 
 logging.basicConfig(format='%(asctime)s | %(message)s', datefmt='%Y/%m/%d %H:%M:%S', level=logging.DEBUG)
 garmin_api = GarminApi(app)
+
+
 mongodb = MongoDbService(settings.MONGO_CONNECTION_STRING)
 
 
@@ -74,8 +76,9 @@ def callback(callback_name: str):
         for data_name in json_data:  # should only run once (loop 0 time)
             print(f'--data_name={data_name} | data_count={len(json_data[data_name])}')
             for data in json_data[data_name]:  # 1 or more
-                # print()
-                mongodb.add_data(data_name, data)
+                # print(data)
+                if settings.MONGO_CONNECTION_STRING is not None:
+                    mongodb.add_data(data_name, data)   
         # print(request.json, flush=True)
         print(flush=True)
     except Exception as e:
